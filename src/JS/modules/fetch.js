@@ -12,12 +12,9 @@ async function fetchImages(searchValue, page){
     page: `${page}`
     });
 
-      const response = await axios.get(`${BASE_URL}?${params}`);
-       if (response.data.hits.length === 0) {
-        throw new Error("No images found");
-    }
-    return response.data.hits;
+      const {data} = await axios.get(`${BASE_URL}?${params}`);
+    return data;
 
 }
 
-export { fetchImages}
+export { fetchImages};
