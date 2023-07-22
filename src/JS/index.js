@@ -15,9 +15,11 @@ const simpleLightbox = new SimpleLightbox('.gallery a');
 loadMoreButton.addEventListener("click", onLoadmore)
 upButton.addEventListener("click", scrolTop)
 
+
 async function onSearch(e){
 try {
     e.preventDefault();
+    Loading.arrows();
     searchValue = form.elements.searchQuery.value.trim();
     const isValidInput = /^[a-zA-Z0-9\s]+$/.test(searchValue);
     if (!isValidInput){
@@ -28,10 +30,11 @@ try {
       imagesContainer.innerHTML = createMarkup(searchImg)
       simpleLightbox.refresh();
       loadMoreButton.style.visibility = "visible";
-      e.currentTarget.reset()
+      e.target.reset()
     }
      catch(error) {
       Report.failure()
+      console.log(error);
       }
      finally {
       Loading.remove();
@@ -43,18 +46,20 @@ let page = 1;
 async function onLoadmore() {
 try
 {
-
+Loading.arrows()
 page += 1;
 const moreImages = await fetchImages(searchValue, page)
 imagesContainer.insertAdjacentHTML('beforeend', createMarkup(moreImages))
 simpleLightbox.refresh();
 loadMoreButton.style.visibility = "visible";
-  if (moreImages.length === 0){
-    Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
+} catch(err) {
+  Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
     loadMoreButton.style.visibility = "hidden";
     upButton.style.visibility = "visible";
   }
-} catch(err) {console.log(err)}}
+  finally {
+    Loading.remove();
+}}
 
 function scrolTop(){
   window.scrollTo({
