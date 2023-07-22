@@ -24,6 +24,7 @@ let observer = new IntersectionObserver(handlerPagination, options);
 
 upButton.addEventListener("click", scrolTop)
 
+let searchValue;
 
 async function onFormSubmit(e){
 try {
@@ -64,8 +65,7 @@ function scrolTop(){
 let page = 1;
 
  async function handlerPagination(entries, observer) {
-  
-  entries.forEach(async (entry) => { 
+  entries.forEach(async (entry) => {
    if(entry.isIntersecting){
   try {
     page +=1;
