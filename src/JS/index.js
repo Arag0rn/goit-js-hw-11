@@ -26,25 +26,26 @@ upButton.addEventListener("click", scrolTop)
 
 let searchValue;
 
+let page = 1;
+
 async function onFormSubmit(e){
 try {
-  observer.observe(guardJs)
     e.preventDefault();
     Loading.arrows();
     searchValue = form.elements.searchQuery.value.trim();
     const isValidInput = /^[a-zA-Z0-9\s]+$/.test(searchValue);
-    if (!isValidInput){
-      Report.warning("Invalid input",  "Please enter a valid search query.");
-      return
-    }
+    if (!isValidInput || searchValue === "") {
+      return Report.warning("Invalid input",  "Please enter a valid search query.");
+    } else {
+      observer.observe(guardJs)
       const {hits, totalHits} = await fetchImages(searchValue)
       Notify.success(`Hooray! We found ${totalHits} images`)
       imagesContainer.innerHTML = createMarkup(hits)
       simpleLightbox.refresh();
       e.target.reset()
-    }
+    }}
      catch(error) {
-      Report.failure()
+      Report.warning("Invalid input",  "Please enter a valid search query.");
       console.log(error);
       }
      finally {
@@ -62,10 +63,10 @@ function scrolTop(){
 
 
 
-let page = 1;
+
 
  async function handlerPagination(entries, observer) {
-  entries.forEach(async (entry) => {
+  for (entry of entries) {
    if(entry.isIntersecting){
   try {
     page +=1;
@@ -86,6 +87,6 @@ let page = 1;
       Loading.remove();
     }
   }
- });
+ };
 }
 

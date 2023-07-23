@@ -9,6 +9,7 @@ async function fetchImages(searchValue, page){
     image_type : "photo",
     orientation: "horizontal",
     safesearch : true,
+    per_page: 40,
     page: `${page}`
     });
 
