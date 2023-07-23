@@ -70,7 +70,7 @@ let observer = new IntersectionObserver(handlerPagination, options);
 
 
  async function handlerPagination(entries, observer) {
-  for (entry of entries) {
+  for (let entry of entries) {
    if(entry.isIntersecting){
   try {
     Loading.arrows()
