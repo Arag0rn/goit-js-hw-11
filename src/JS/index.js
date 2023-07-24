@@ -62,7 +62,7 @@ function scrolTop(){
 
   let options = {
     root: null,
-    rootMargin: "10px",
+    rootMargin: "300px",
     threshold: 0,
   };
 
@@ -77,6 +77,9 @@ let observer = new IntersectionObserver(handlerPagination, options);
     page +=1;
     const {hits, totalHits} = await fetchImages(searchValue, page)
     imagesContainer.insertAdjacentHTML('beforeend', createMarkup(hits))
+    if(hits.length < 40){
+      observer.unobserve(entry.target)
+    }
     simpleLightbox.refresh();
     console.log(hits);
     if(hits.length === 0 && entry.isIntersecting){
@@ -95,3 +98,24 @@ let observer = new IntersectionObserver(handlerPagination, options);
  };
 }
 
+let lastScrollTop = 0;
+
+function handleScrollEnd() {
+  upButton.style.visibility = "visible";
+      Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
+  console.log('Достигнут конец скроллбара');
+}
+
+function onScroll() {
+  const lastElement = document.getElementById('js-scrol-end');
+  const lastElementPosition = lastElement.getBoundingClientRect().top;
+
+  const currentScrollTop = window.scrollY;
+
+  if (currentScrollTop > lastScrollTop && lastElementPosition <= window.innerHeight) {
+    handleScrollEnd();
+  }
+  lastScrollTop = currentScrollTop;
+}
+
+window.addEventListener('scroll', onScroll);

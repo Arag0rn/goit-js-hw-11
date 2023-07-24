@@ -14,6 +14,7 @@ async function fetchImages(searchValue, page = 1){
     });
 
       const {data} = await axios.get(`${BASE_URL}?${params}`);
+      console.dir(data)
     return data;
 
 }
