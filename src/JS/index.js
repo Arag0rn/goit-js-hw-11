@@ -24,6 +24,9 @@ let page = 1;
 async function onFormSubmit(e){
 try {
     e.preventDefault();
+    observer.unobserve(guardJs)
+    imagesContainer.innerHTML = "";
+    page = 1;
     Loading.arrows();
     searchValue = form.elements.searchQuery.value.trim();
     const isValidInput = /^[a-zA-Z0-9\s]+$/.test(searchValue);
@@ -34,12 +37,14 @@ try {
     } else {
       const {hits, totalHits} = await fetchImages(searchValue)
       if(totalHits === 0){
-        throw new Error("Nothing has defined")
+        Report.warning("Nothing has defined", "Sorry, there are no images matching your search query. Please try again.")
+        return
       }
       Notify.success(`Hooray! We found ${totalHits} images`)
       imagesContainer.innerHTML = createMarkup(hits)
       simpleLightbox.refresh();
       e.target.reset()
+     observer.observe(guardJs);
     }}
      catch(error) {
       Report.warning("Invalid input",  "Please enter a valid search query.");
@@ -48,9 +53,10 @@ try {
      finally {
       Loading.remove();
 }
-observer.observe(guardJs);
-}
 
+}
+ 
+ 
 function scrolTop(){
   window.scrollTo({
     top: 0,
@@ -62,7 +68,7 @@ function scrolTop(){
 
   let options = {
     root: null,
-    rootMargin: "300px",
+    rootMargin: "10px",
     threshold: 0,
   };
 
@@ -75,17 +81,18 @@ let observer = new IntersectionObserver(handlerPagination, options);
   try {
     Loading.arrows()
     page +=1;
+    console.log(page);
     const {hits, totalHits} = await fetchImages(searchValue, page)
     imagesContainer.insertAdjacentHTML('beforeend', createMarkup(hits))
     if(hits.length < 40){
       observer.unobserve(entry.target)
     }
     simpleLightbox.refresh();
-    console.log(hits);
-    if(hits.length === 0 && entry.isIntersecting){
+    if(page > Math.round((totalHits / 40))) {
       upButton.style.visibility = "visible";
       Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
-    }
+      return;
+  }
     } catch(err) {
       console.log(err);
       upButton.style.visibility = "visible";
@@ -98,24 +105,3 @@ let observer = new IntersectionObserver(handlerPagination, options);
  };
 }
 
-let lastScrollTop = 0;
-
-function handleScrollEnd() {
-  upButton.style.visibility = "visible";
-      Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
-  console.log('Достигнут конец скроллбара');
-}
-
-function onScroll() {
-  const lastElement = document.getElementById('js-scrol-end');
-  const lastElementPosition = lastElement.getBoundingClientRect().top;
-
-  const currentScrollTop = window.scrollY;
-
-  if (currentScrollTop > lastScrollTop && lastElementPosition <= window.innerHeight) {
-    handleScrollEnd();
-  }
-  lastScrollTop = currentScrollTop;
-}
-
-window.addEventListener('scroll', onScroll);
