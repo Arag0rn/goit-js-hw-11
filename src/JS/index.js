@@ -89,9 +89,11 @@ let observer = new IntersectionObserver(handlerPagination, options);
     }
     simpleLightbox.refresh();
     if(page > Math.round((totalHits / 40))) {
-      upButton.style.visibility = "visible";
+      setTimeout(() => {
+        upButton.style.visibility = "visible";
       Report.failure("Ups", "We're sorry, but you've reached the end of search results.")
       return;
+      }, 1000);
   }
     } catch(err) {
       console.log(err);
